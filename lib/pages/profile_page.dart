@@ -1,47 +1,29 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:chat_app/pages/home-page.dart';
 import 'package:flutter/material.dart';
 
 import '../../shared/clr.dart';
 import '../../shared/layout.dart';
 import '../../shared/txt.dart';
-import '../../widgets/widgets.dart';
-import '../helper/helper_functions.dart';
+import '../widgets/widgets.dart';
 import '../services/auth_service.dart';
 import 'auth/login_page.dart';
-import 'profile_page.dart';
-import 'search_page.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class ProfilePage extends StatefulWidget {
+  final String userName;
+  final String userEmail;
+
+  const ProfilePage({
+    super.key,
+    required this.userName,
+    required this.userEmail,
+  });
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<ProfilePage> createState() => _ProfilePageState();
 }
 
-class _HomePageState extends State<HomePage> {
-  String userName = '';
-  String userEmail = '';
+class _ProfilePageState extends State<ProfilePage> {
   AuthService authService = AuthService();
-
-  @override
-  void initState() {
-    super.initState();
-    userDataGetter();
-  }
-
-  userDataGetter() async {
-    await HelperFunctions.getUserNameSF().then((value) {
-      setState(() {
-        userName = value!;
-      });
-    });
-
-    await HelperFunctions.getUserEmailSF().then((value) {
-      setState(() {
-        userEmail = value!;
-      });
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,15 +32,9 @@ class _HomePageState extends State<HomePage> {
         elevation: 0,
         centerTitle: true,
         title: const Text(
-          'Groups',
+          'Profile',
           style: txt.appBar,
         ),
-        actions: [
-          IconButton(
-            onPressed: () => nextPage(context, const SearchPage()),
-            icon: const Icon(Icons.search),
-          ),
-        ],
       ),
       drawer: Drawer(
         child: ListView(
@@ -71,22 +47,22 @@ class _HomePageState extends State<HomePage> {
             ),
             const SizedBox(height: layout.spacing),
             Text(
-              userName,
+              widget.userName,
               textAlign: TextAlign.center,
               style: txt.medium,
             ),
             const SizedBox(height: layout.spacing),
             const Divider(height: 2),
             ListTile(
-              onTap: () {},
+              onTap: () => nextPageReplace(context, const HomePage()),
               selectedColor: clr.primary,
-              selected: true,
               contentPadding: const EdgeInsets.symmetric(horizontal: layout.padding),
               leading: const Icon(Icons.group),
               title: const Text('Groups', style: txt.normal),
             ),
             ListTile(
-              onTap: () => nextPageReplace(context, ProfilePage(userName: userName, userEmail: userEmail)),
+              onTap: () {},
+              selected: true,
               selectedColor: clr.primary,
               contentPadding: const EdgeInsets.symmetric(horizontal: layout.padding),
               leading: const Icon(Icons.person),

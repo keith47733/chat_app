@@ -10,6 +10,12 @@ class txt {
   static const textSizeNormal = 18 * textScaleFactor;
   static const textSizeSmall = 16 * textScaleFactor;
 
+ static const appBar = TextStyle(
+    color: clr.light,
+    fontSize: textSizeMedium,
+    fontWeight: FontWeight.normal,
+  );
+
   static const large = TextStyle(
     color: clr.dark,
     fontSize: textSizeLarge,
@@ -25,7 +31,7 @@ class txt {
   static const normal = TextStyle(
     color: clr.dark,
     fontSize: textSizeNormal,
-    fontWeight: FontWeight.bold,
+    fontWeight: FontWeight.normal,
   );
 
   static const small = TextStyle(

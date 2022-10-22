@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 
 class clr {
+  static const primary = Colors.blue;
+
   static const light = Colors.white;
   static const grey = Colors.grey;
   static const dark = Colors.black;
 
-  static const primary = Colors.blue;
-
-  static final error = Colors.red.shade600;
+  static final error = Colors.red.shade300;
+  static final confirm = Colors.green.shade300;
 
   static Color hexToColor(String code) {
     return Color(int.parse(code.substring(0, 6), radix: 16) + 0xFF000000);

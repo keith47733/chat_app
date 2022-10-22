@@ -167,7 +167,7 @@ class _LoginPageState extends State<LoginPage> {
 					.getUserData(email);
           await HelperFunctions.saveUserLoggedInStatusSF(true);
           await HelperFunctions.saveUserNameSF(email);
-          await HelperFunctions.saveUserEmailSF(snapshot.docs[0]['user_name']);
+          await HelperFunctions.saveUserEmailSF(snapshot.docs[0]['user_email']);
           nextPageReplace(context, const HomePage());
         } else {
           showSnackBar(
