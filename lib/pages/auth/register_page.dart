@@ -5,23 +5,24 @@ import '../../shared/clr.dart';
 import '../../shared/layout.dart';
 import '../../shared/txt.dart';
 import '../../widgets/widgets.dart';
-import 'register_page.dart';
+import 'login_page.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _RegisterPageState extends State<RegisterPage> {
   final formKey = GlobalKey<FormState>();
+
+  String name = '';
+  String email = '';
+  String password = '';
 
   @override
   Widget build(BuildContext context) {
-    String email = '';
-    String password = '';
-
     return Scaffold(
       backgroundColor: clr.light,
       body: SingleChildScrollView(
@@ -42,13 +43,37 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: layout.spacing),
                 Text(
-                  'Login to see what your friends are talking about!',
+                  'Register to joing your friends!',
                   style: txt.medium.copyWith(
                     color: clr.darken(clr.grey, 25),
                   ),
                 ),
                 const SizedBox(height: layout.spacing),
-                Image.asset('assets/images/login.png'),
+                Image.asset('assets/images/register.png'),
+                const SizedBox(height: layout.spacing),
+                TextFormField(
+                    textInputAction: TextInputAction.next,
+                    keyboardType: TextInputType.text,
+                    decoration: textInputDecoration.copyWith(
+                      labelText: 'Name',
+                      prefixIcon: const Icon(
+                        Icons.person,
+                        color: clr.primary,
+                      ),
+                    ),
+                    onChanged: ((value) {
+                      setState(() {
+                        name = value;
+                        print(name);
+                      });
+                    }),
+                    validator: (value) {
+                      if (value!.isNotEmpty) {
+                        return null;
+                      } else {
+                        return "Please enter a name";
+                      }
+                    }),
                 const SizedBox(height: layout.spacing),
                 TextFormField(
                     textInputAction: TextInputAction.next,
@@ -107,13 +132,11 @@ class _LoginPageState extends State<LoginPage> {
                         borderRadius: BorderRadius.circular(layout.radius * 1.5),
                       ),
                     ),
-                    onPressed: () {
-                      login();
-                    },
+                    onPressed: register,
                     child: const Padding(
                       padding: EdgeInsets.all(layout.padding),
                       child: Text(
-                        'Sign In',
+                        'Register',
                         style: txt.button,
                       ),
                     ),
@@ -123,15 +146,17 @@ class _LoginPageState extends State<LoginPage> {
                 RichText(
                   text: TextSpan(children: [
                     TextSpan(
-                      text: 'Don\'t have an account?',
+                      text: 'Already have an account?',
                       style: txt.small.copyWith(color: clr.darken(clr.grey, 25)),
                     ),
-                    const TextSpan(text: '     '),
+                    const TextSpan(text: '   '),
                     TextSpan(
-                      recognizer: TapGestureRecognizer()..onTap = () {
-												nextPage(context, const RegisterPage());
-											},
-                      text: 'Register here',
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () {
+                          nextPage(context, const LoginPage());
+                          //nextPageReplace(context, const LoginPage());
+                        },
+                      text: 'Login',
                       style: txt.textButton,
                     ),
                   ]),
@@ -144,5 +169,5 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  login() {}
+  register() {}
 }

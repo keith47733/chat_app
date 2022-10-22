@@ -1,7 +1,7 @@
-import 'package:chat_app/helper/helper_functions.dart';
 import 'package:flutter/material.dart';
 
 import '../shared/clr.dart';
+import 'helper/helper_functions.dart';
 import 'pages/auth/login_page.dart';
 import 'pages/home-page.dart';
 
@@ -34,7 +34,7 @@ class _ChatAppState extends State<ChatApp> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primaryColor: clr.primaryColor,
+        primaryColor: clr.primary,
       ),
       home: _isLoggedIn ? const HomePage() : const LoginPage(),
     );

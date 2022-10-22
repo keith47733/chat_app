@@ -5,7 +5,9 @@ class clr {
   static const grey = Colors.grey;
   static const dark = Colors.black;
 
-  static const primaryColor = Color(0xFF2196F3);
+  static const primary = Colors.blue;
+
+  static const error = Colors.red;
 
   static Color hexToColor(String code) {
     return Color(int.parse(code.substring(0, 6), radix: 16) + 0xFF000000);
