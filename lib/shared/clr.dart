@@ -7,7 +7,7 @@ class clr {
 
   static const primary = Colors.blue;
 
-  static const error = Colors.red;
+  static final error = Colors.red.shade600;
 
   static Color hexToColor(String code) {
     return Color(int.parse(code.substring(0, 6), radix: 16) + 0xFF000000);
