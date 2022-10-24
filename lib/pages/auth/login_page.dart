@@ -56,8 +56,9 @@ class _LoginPageState extends State<LoginPage> {
                       const SizedBox(height: layout.spacing),
                       Text(
                         'Login to see what your friends are talking about!',
+												textAlign: TextAlign.center,
                         style: txt.normal.copyWith(
-                          color: clr.darken(clr.grey, 25),
+                          color: clr.darken(clr.grey1, 25),
                         ),
                       ),
                       const SizedBox(height: layout.spacing),
@@ -135,7 +136,7 @@ class _LoginPageState extends State<LoginPage> {
                         text: TextSpan(children: [
                           TextSpan(
                             text: 'Don\'t have an account?',
-                            style: txt.small.copyWith(color: clr.darken(clr.grey, 25)),
+                            style: txt.small.copyWith(color: clr.darken(clr.grey1, 25)),
                           ),
                           const TextSpan(text: '     '),
                           TextSpan(
@@ -163,10 +164,9 @@ class _LoginPageState extends State<LoginPage> {
       });
       await authService.loginUserWithEmailAndPassword(email, password).then((value) async {
         if (value == true) {
-					QuerySnapshot snapshot = await DatabaseService(FirebaseAuth.instance.currentUser!.uid)
-					.getUserData(email);
+          QuerySnapshot snapshot = await DatabaseService(FirebaseAuth.instance.currentUser!.uid).getUserData(email);
           await HelperFunctions.saveUserLoggedInStatusSF(true);
-          await HelperFunctions.saveUserNameSF(email);
+          await HelperFunctions.saveUserNameSF(snapshot.docs[0]['user_name']);
           await HelperFunctions.saveUserEmailSF(snapshot.docs[0]['user_email']);
           nextPageReplace(context, const HomePage());
         } else {

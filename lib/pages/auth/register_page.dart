@@ -57,7 +57,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       Text(
                         'Register to joing your friends!',
                         style: txt.normal.copyWith(
-                          color: clr.darken(clr.grey, 25),
+                          color: clr.darken(clr.grey1, 25),
                         ),
                       ),
                       const SizedBox(height: layout.spacing),
@@ -162,7 +162,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         text: TextSpan(children: [
                           TextSpan(
                             text: 'Already have an account?',
-                            style: txt.small.copyWith(color: clr.darken(clr.grey, 25)),
+                            style: txt.small.copyWith(color: clr.darken(clr.grey1, 25)),
                           ),
                           const TextSpan(text: '   '),
                           TextSpan(
@@ -196,10 +196,10 @@ class _RegisterPageState extends State<RegisterPage> {
       )
           .then((value) async {
         if (value == true) {
-					await HelperFunctions.saveUserLoggedInStatusSF(true);
-					await HelperFunctions.saveUserNameSF(name);
-					await HelperFunctions.saveUserEmailSF(email);
-					nextPageReplace(context, const HomePage());
+          await HelperFunctions.saveUserLoggedInStatusSF(true);
+          await HelperFunctions.saveUserNameSF(name);
+          await HelperFunctions.saveUserEmailSF(email);
+          nextPageReplace(context, const HomePage());
         } else {
           showSnackBar(
             context,

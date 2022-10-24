@@ -20,9 +20,36 @@ class DatabaseService {
     });
   }
 
-	Future getUserData(String email) async {
-		QuerySnapshot snapshot = await userCollection
-		.where('user_email', isEqualTo: email).get();
-		return snapshot;
-	}
+  Future getUserData(String email) async {
+    QuerySnapshot snapshot = await userCollection.where('user_email', isEqualTo: email).get();
+    return snapshot;
+  }
+
+  getUserGroups() async {
+    return userCollection.doc(uid).snapshots();
+  }
+
+  Future createGroup(
+    String userName,
+    String id,
+    String groupName,
+  ) async {
+    DocumentReference groupDocumentReference = await groupCollection.add({
+      'admin': "${id}_$userName",
+      'group_id': '',
+      'group_name': groupName,
+      'group_icon': '',
+      'members': [],
+      'recent_message': '',
+      'recent_message_sender': '',
+    }); // CREATES ID WHEN DOC IS CREATED
+    await groupDocumentReference.update({
+      'group_id': groupDocumentReference.id, // UPDATE DOC WITH NEWLY CREATED ID ABOVE
+      'members': FieldValue.arrayUnion(['${uid}_$userName']),
+    });
+    DocumentReference userDocumentReference = userCollection.doc(uid);
+    return await userDocumentReference.update({
+      'groups': FieldValue.arrayUnion(['${groupDocumentReference.id}_$groupName'])
+    });
+  }
 }

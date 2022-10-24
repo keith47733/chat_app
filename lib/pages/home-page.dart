@@ -1,3 +1,4 @@
+import 'package:chat_app/services/database_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -22,6 +23,9 @@ class _HomePageState extends State<HomePage> {
   String userName = '';
   String userEmail = '';
   AuthService authService = AuthService();
+  Stream? groups;
+  bool _isLoading = false;
+  String groupName = '';
 
   @override
   void initState() {
@@ -39,6 +43,12 @@ class _HomePageState extends State<HomePage> {
     await HelperFunctions.getUserEmailSF().then((value) {
       setState(() {
         userEmail = value!;
+      });
+    });
+
+    await DatabaseService(FirebaseAuth.instance.currentUser!.uid).getUserGroups().then((snapshot) {
+      setState(() {
+        groups = snapshot;
       });
     });
   }
@@ -64,10 +74,11 @@ class _HomePageState extends State<HomePage> {
         child: ListView(
           padding: const EdgeInsets.symmetric(vertical: layout.pageMarginVertical),
           children: [
-            const Icon(
-              Icons.account_circle,
-              size: 150,
-              color: clr.primary,
+            const Center(
+              child: CircleAvatar(
+                radius: 75,
+                backgroundImage: AssetImage('assets/images/user.png'),
+              ),
             ),
             const SizedBox(height: layout.spacing),
             Text(
@@ -99,7 +110,7 @@ class _HomePageState extends State<HomePage> {
                   context: context,
                   builder: ((context) {
                     return AlertDialog(
-                      title: const Text(
+                      title: Text(
                         'Logout',
                         style: txt.medium,
                       ),
@@ -142,6 +153,145 @@ class _HomePageState extends State<HomePage> {
             ),
           ],
         ),
+      ),
+      body: groupList(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => addGroupDialog(context),
+        backgroundColor: clr.primary,
+        foregroundColor: clr.light,
+        child: const Icon(Icons.group_add_sharp, size: layout.spacing * 1.5, color: clr.light),
+      ),
+    );
+  }
+
+  groupList() {
+    return StreamBuilder(
+      stream: groups,
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        if (snapshot.hasData) {
+          if (snapshot.data['groups'] != null) {
+            if (snapshot.data['groups'].length != 0) {
+              return const Text('HELLO');
+            } else {
+              return noGroupWidget();
+            }
+          } else {
+            return noGroupWidget();
+          }
+        } else {
+          return const Center(child: CircularProgressIndicator(color: clr.primary));
+        }
+      },
+    );
+  }
+
+  addGroupDialog(BuildContext context) {
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text(
+              'Create a group',
+              textAlign: TextAlign.center,
+              style: txt.medium,
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+							crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _isLoading == true
+                    ? const Center(child: CircularProgressIndicator(color: clr.primary))
+                    : TextField(
+                        onChanged: (value) {
+                          setState(() {
+                            groupName = value;
+                          });
+                        },
+                        style: txt.small,
+                        decoration: InputDecoration(
+                          enabledBorder: const OutlineInputBorder(
+                            borderSide: BorderSide(color: clr.primary),
+                          ),
+                          focusedBorder: const OutlineInputBorder(
+                            borderSide: BorderSide(color: clr.primary),
+                          ),
+                          errorBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: clr.error),
+                          ),
+                        ),
+                      ),
+              ],
+            ),
+            actions: [
+              Row(
+								mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(layout.radius / 2),
+                      ),
+                    ),
+                    onPressed: () {
+											Navigator.of(context).pop();
+										},
+                    child: Padding(
+                      padding: const EdgeInsets.all(layout.padding / 2),
+                      child: Text(
+                        'Cancel',
+                        style: txt.button.copyWith(fontSize: txt.textSizeSmall),
+                      ),
+                    ),
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(layout.radius / 2),
+                      ),
+                    ),
+                    onPressed: () async {
+											if(groupName != '') {
+												setState(() {
+												  _isLoading = true;
+													DatabaseService(FirebaseAuth.instance.currentUser!.uid).createGroup(userName, FirebaseAuth.instance.currentUser!.uid, groupName)
+													.whenComplete(() => _isLoading = false);
+												});
+												Navigator.of(context).pop();
+												showSnackBar(context, 'Group created successfully', clr.confirm);
+											} else {
+												
+											}
+										},
+                    child: Padding(
+                      padding: const EdgeInsets.all(layout.padding / 2),
+                      child: Text(
+                        'Create',
+                        style: txt.button.copyWith(fontSize: txt.textSizeSmall),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          );
+        });
+  }
+
+  noGroupWidget() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: layout.padding * 2),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Icon(Icons.groups, size: 75, color: clr.grey2),
+          const SizedBox(height: layout.spacing),
+          Text('You have not created or joined any groups yet.',
+              textAlign: TextAlign.center, style: txt.normal.copyWith(color: clr.grey2)),
+        ],
       ),
     );
   }

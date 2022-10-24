@@ -4,7 +4,8 @@ class clr {
   static const primary = Colors.blue;
 
   static const light = Colors.white;
-  static const grey = Colors.grey;
+  static const grey1 = Colors.grey;
+	static final grey2 = Colors.grey.shade700;
   static const dark = Colors.black;
 
   static final error = Colors.red.shade300;

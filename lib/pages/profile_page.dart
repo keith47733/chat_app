@@ -40,10 +40,11 @@ class _ProfilePageState extends State<ProfilePage> {
         child: ListView(
           padding: const EdgeInsets.symmetric(vertical: layout.pageMarginVertical),
           children: [
-            const Icon(
-              Icons.account_circle,
-              size: 150,
-              color: clr.primary,
+            const Center(
+              child: CircleAvatar(
+                radius: 75,
+                backgroundImage: AssetImage('assets/images/user.png'),
+              ),
             ),
             const SizedBox(height: layout.spacing),
             Text(
@@ -75,7 +76,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   context: context,
                   builder: ((context) {
                     return AlertDialog(
-                      title: const Text(
+                      title: Text(
                         'Logout',
                         style: txt.medium,
                       ),
@@ -115,6 +116,51 @@ class _ProfilePageState extends State<ProfilePage> {
               contentPadding: const EdgeInsets.symmetric(horizontal: layout.padding),
               leading: const Icon(Icons.exit_to_app),
               title: const Text('Logout', style: txt.normal),
+            ),
+          ],
+        ),
+      ),
+      body: Container(
+        padding: const EdgeInsets.symmetric(
+          vertical: layout.pageMarginVertical,
+          horizontal: layout.pageMarginHorizontal,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            const Center(
+              child: CircleAvatar(
+                radius: 75,
+                backgroundImage: AssetImage('assets/images/user.png'),
+              ),
+            ),
+            const SizedBox(height: layout.spacing * 2),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Name',
+                  style: txt.normal,
+                ),
+								Text(
+                  widget.userName,
+                  style: txt.normal,
+                ),
+              ],
+            ),
+						const Divider(height: layout.spacing),
+						Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Email',
+                  style: txt.normal,
+                ),
+								Text(
+                  widget.userEmail,
+                  style: txt.normal,
+                ),
+              ],
             ),
           ],
         ),

@@ -10,7 +10,7 @@ class txt {
   static const textSizeNormal = 18 * textScaleFactor;
   static const textSizeSmall = 16 * textScaleFactor;
 
- static const appBar = TextStyle(
+  static const appBar = TextStyle(
     color: clr.light,
     fontSize: textSizeMedium,
     fontWeight: FontWeight.normal,
@@ -22,8 +22,8 @@ class txt {
     fontWeight: FontWeight.bold,
   );
 
-  static const medium = TextStyle(
-    color: clr.dark,
+  static final medium = TextStyle(
+    color: clr.grey2,
     fontSize: textSizeMedium,
     fontWeight: FontWeight.bold,
   );
@@ -34,14 +34,14 @@ class txt {
     fontWeight: FontWeight.normal,
   );
 
-  static const small = TextStyle(
-    color: clr.dark,
+  static final small = TextStyle(
+    color: clr.grey2,
     fontSize: textSizeSmall,
     fontWeight: FontWeight.bold,
   );
 
   static final formFieldLabel = TextStyle(
-    color: clr.darken(clr.grey, 35),
+    color: clr.darken(clr.grey1, 35),
     fontSize: textSizeNormal * 0.90,
     fontWeight: FontWeight.normal,
   );
