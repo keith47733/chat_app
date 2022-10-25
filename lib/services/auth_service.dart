@@ -17,7 +17,7 @@ class AuthService {
       );
       final User? user = firebaseAuth.currentUser;
       if (user != null) {
-        await DatabaseService(user.uid).saveUserData(name, email);
+        await DatabaseService(uid: user.uid).saveUserData(name, email);
         return true;
       }
     } // END TRY

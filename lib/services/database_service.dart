@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DatabaseService {
   final String? uid;
-  DatabaseService(this.uid);
+  DatabaseService({this.uid});
 
   final CollectionReference userCollection = FirebaseFirestore.instance.collection('users');
   final CollectionReference groupCollection = FirebaseFirestore.instance.collection('groups');
@@ -52,4 +52,18 @@ class DatabaseService {
       'groups': FieldValue.arrayUnion(['${groupDocumentReference.id}_$groupName'])
     });
   }
+
+  Future getGroupAdmin(String groupID) async {
+    DocumentReference ref = groupCollection.doc(groupID);
+    DocumentSnapshot doc = await ref.get();
+    return doc['admin'];
+  }
+
+  getChats(String groupID) async {
+    return groupCollection.doc(groupID).collection('messages').orderBy('time').snapshots();
+  }
+
+	getGroupMembers(String groupID) async {
+		return groupCollection.doc(groupID).snapshots();
+	}
 }

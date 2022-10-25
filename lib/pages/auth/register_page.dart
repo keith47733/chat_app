@@ -6,7 +6,7 @@ import '../../shared/clr.dart';
 import '../../shared/layout.dart';
 import '../../shared/txt.dart';
 import '../../widgets/widgets.dart';
-import '../home-page.dart';
+import '../home_page.dart';
 import 'login_page.dart';
 import '../../helper/helper_functions.dart';
 

@@ -1,13 +1,14 @@
-import 'package:chat_app/services/database_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../../services/database_service.dart';
 import '../../shared/clr.dart';
 import '../../shared/layout.dart';
 import '../../shared/txt.dart';
 import '../../widgets/widgets.dart';
 import '../helper/helper_functions.dart';
 import '../services/auth_service.dart';
+import '../widgets/group_tile.dart';
 import 'auth/login_page.dart';
 import 'profile_page.dart';
 import 'search_page.dart';
@@ -33,6 +34,14 @@ class _HomePageState extends State<HomePage> {
     userDataGetter();
   }
 
+  String getGroupId(String res) {
+    return res.substring(0, res.indexOf('_'));
+  }
+
+  String getGroupName(String res) {
+    return res.substring(res.indexOf('_') + 1);
+  }
+
   userDataGetter() async {
     await HelperFunctions.getUserNameSF().then((value) {
       setState(() {
@@ -46,7 +55,7 @@ class _HomePageState extends State<HomePage> {
       });
     });
 
-    await DatabaseService(FirebaseAuth.instance.currentUser!.uid).getUserGroups().then((snapshot) {
+    await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid).getUserGroups().then((snapshot) {
       setState(() {
         groups = snapshot;
       });
@@ -165,23 +174,36 @@ class _HomePageState extends State<HomePage> {
   }
 
   groupList() {
-    return StreamBuilder(
-      stream: groups,
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        if (snapshot.hasData) {
-          if (snapshot.data['groups'] != null) {
-            if (snapshot.data['groups'].length != 0) {
-              return const Text('HELLO');
+    return Padding(
+      padding: const EdgeInsets.all(layout.padding / 2),
+      child: StreamBuilder(
+        stream: groups,
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (snapshot.hasData) {
+            if (snapshot.data['groups'] != null) {
+              if (snapshot.data['groups'].length != 0) {
+                return ListView.builder(
+                  itemCount: snapshot.data['groups'].length,
+                  itemBuilder: ((context, index) {
+                    int reverseIndex = snapshot.data['groups'].length - index - 1;
+                    return GroupTile(
+                      userName: userName,
+                      groupID: getGroupId(snapshot.data['groups'][reverseIndex]),
+                      groupName: getGroupName(snapshot.data['groups'][reverseIndex]),
+                    );
+                  }),
+                );
+              } else {
+                return noGroupWidget();
+              }
             } else {
               return noGroupWidget();
             }
           } else {
-            return noGroupWidget();
+            return const Center(child: CircularProgressIndicator(color: clr.primary));
           }
-        } else {
-          return const Center(child: CircularProgressIndicator(color: clr.primary));
-        }
-      },
+        },
+      ),
     );
   }
 
@@ -190,92 +212,95 @@ class _HomePageState extends State<HomePage> {
         barrierDismissible: false,
         context: context,
         builder: (context) {
-          return AlertDialog(
-            title: Text(
-              'Create a group',
-              textAlign: TextAlign.center,
-              style: txt.medium,
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-							crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _isLoading == true
-                    ? const Center(child: CircularProgressIndicator(color: clr.primary))
-                    : TextField(
-                        onChanged: (value) {
-                          setState(() {
-                            groupName = value;
-                          });
+          return StatefulBuilder(
+            builder: ((context, setState) {
+              return AlertDialog(
+                title: Text(
+                  'Create a group',
+                  textAlign: TextAlign.center,
+                  style: txt.medium,
+                ),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _isLoading == true
+                        ? const Center(child: CircularProgressIndicator(color: clr.primary))
+                        : TextField(
+                            onChanged: (value) {
+                              setState(() {
+                                groupName = value;
+                              });
+                            },
+                            style: txt.small,
+                            decoration: InputDecoration(
+                              enabledBorder: const OutlineInputBorder(
+                                borderSide: BorderSide(color: clr.primary),
+                              ),
+                              focusedBorder: const OutlineInputBorder(
+                                borderSide: BorderSide(color: clr.primary),
+                              ),
+                              errorBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: clr.error),
+                              ),
+                            ),
+                          ),
+                  ],
+                ),
+                actions: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(layout.radius / 2),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
                         },
-                        style: txt.small,
-                        decoration: InputDecoration(
-                          enabledBorder: const OutlineInputBorder(
-                            borderSide: BorderSide(color: clr.primary),
-                          ),
-                          focusedBorder: const OutlineInputBorder(
-                            borderSide: BorderSide(color: clr.primary),
-                          ),
-                          errorBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: clr.error),
+                        child: Padding(
+                          padding: const EdgeInsets.all(layout.padding / 2),
+                          child: Text(
+                            'Cancel',
+                            style: txt.button.copyWith(fontSize: txt.textSizeSmall),
                           ),
                         ),
                       ),
-              ],
-            ),
-            actions: [
-              Row(
-								mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(layout.radius / 2),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(layout.radius / 2),
+                          ),
+                        ),
+                        onPressed: () async {
+                          if (groupName != '') {
+                            setState(() {
+                              _isLoading = true;
+                              DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
+                                  .createGroup(userName, FirebaseAuth.instance.currentUser!.uid, groupName)
+                                  .whenComplete(() => _isLoading = false);
+                            });
+                            Navigator.of(context).pop();
+                            showSnackBar(context, 'Group created successfully', clr.confirm);
+                          } else {}
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(layout.padding / 2),
+                          child: Text(
+                            'Create',
+                            style: txt.button.copyWith(fontSize: txt.textSizeSmall),
+                          ),
+                        ),
                       ),
-                    ),
-                    onPressed: () {
-											Navigator.of(context).pop();
-										},
-                    child: Padding(
-                      padding: const EdgeInsets.all(layout.padding / 2),
-                      child: Text(
-                        'Cancel',
-                        style: txt.button.copyWith(fontSize: txt.textSizeSmall),
-                      ),
-                    ),
-                  ),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(layout.radius / 2),
-                      ),
-                    ),
-                    onPressed: () async {
-											if(groupName != '') {
-												setState(() {
-												  _isLoading = true;
-													DatabaseService(FirebaseAuth.instance.currentUser!.uid).createGroup(userName, FirebaseAuth.instance.currentUser!.uid, groupName)
-													.whenComplete(() => _isLoading = false);
-												});
-												Navigator.of(context).pop();
-												showSnackBar(context, 'Group created successfully', clr.confirm);
-											} else {
-												
-											}
-										},
-                    child: Padding(
-                      padding: const EdgeInsets.all(layout.padding / 2),
-                      child: Text(
-                        'Create',
-                        style: txt.button.copyWith(fontSize: txt.textSizeSmall),
-                      ),
-                    ),
+                    ],
                   ),
                 ],
-              ),
-            ],
+              );
+            }),
           );
         });
   }

@@ -10,7 +10,7 @@ import '../../shared/clr.dart';
 import '../../shared/layout.dart';
 import '../../shared/txt.dart';
 import '../../widgets/widgets.dart';
-import '../home-page.dart';
+import '../home_page.dart';
 import 'register_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -164,7 +164,7 @@ class _LoginPageState extends State<LoginPage> {
       });
       await authService.loginUserWithEmailAndPassword(email, password).then((value) async {
         if (value == true) {
-          QuerySnapshot snapshot = await DatabaseService(FirebaseAuth.instance.currentUser!.uid).getUserData(email);
+          QuerySnapshot snapshot = await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid).getUserData(email);
           await HelperFunctions.saveUserLoggedInStatusSF(true);
           await HelperFunctions.saveUserNameSF(snapshot.docs[0]['user_name']);
           await HelperFunctions.saveUserEmailSF(snapshot.docs[0]['user_email']);

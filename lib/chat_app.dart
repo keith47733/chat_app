@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../shared/clr.dart';
 import 'helper/helper_functions.dart';
 import 'pages/auth/login_page.dart';
-import 'pages/home-page.dart';
+import 'pages/home_page.dart';
 
 class ChatApp extends StatefulWidget {
   const ChatApp({super.key});

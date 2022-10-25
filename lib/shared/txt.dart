@@ -37,7 +37,7 @@ class txt {
   static final small = TextStyle(
     color: clr.grey2,
     fontSize: textSizeSmall,
-    fontWeight: FontWeight.bold,
+    fontWeight: FontWeight.normal,
   );
 
   static final formFieldLabel = TextStyle(
