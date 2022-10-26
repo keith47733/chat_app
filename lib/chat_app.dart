@@ -22,7 +22,7 @@ class _ChatAppState extends State<ChatApp> {
   }
 
   getUserLoggedInStatus() async {
-    await HelperFunctions.getUserLoggedInStatusSF().then((value) {
+    await HelperFunctions.getUserLoggedInStatusFromSF().then((value) {
       if (value != null) {
         setState(() {
           _isLoggedIn = value;

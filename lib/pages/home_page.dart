@@ -43,13 +43,13 @@ class _HomePageState extends State<HomePage> {
   }
 
   userDataGetter() async {
-    await HelperFunctions.getUserNameSF().then((value) {
+    await HelperFunctions.getUserNameFromSF().then((value) {
       setState(() {
         userName = value!;
       });
     });
 
-    await HelperFunctions.getUserEmailSF().then((value) {
+    await HelperFunctions.getUserEmailFromSF().then((value) {
       setState(() {
         userEmail = value!;
       });
