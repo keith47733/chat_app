@@ -1,6 +1,7 @@
-import 'package:chat_app/helper/helper_functions.dart';
-import 'package:chat_app/services/database_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
+import 'database_service.dart';
+import 'shared_pref.dart';
 
 class AuthService {
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
@@ -48,9 +49,9 @@ class AuthService {
   Future logout() async {
     try {
       await firebaseAuth.signOut();
-      await HelperFunctions.saveUserLoggedInStatusSF(false);
-      await HelperFunctions.saveUserNameSF('');
-      await HelperFunctions.saveUserEmailSF('');
+      await SharedPref.saveUserLoggedInStatusSF(false);
+      await SharedPref.saveUserNameSF('');
+      await SharedPref.saveUserEmailSF('');
     } catch (error) {
       return null;
     }

@@ -6,24 +6,22 @@ import '../../shared/clr.dart';
 import '../../shared/layout.dart';
 import '../../shared/txt.dart';
 import '../../widgets/widgets.dart';
-import '../helper/helper_functions.dart';
-import '../services/auth_service.dart';
+import '../services/shared_pref.dart';
+import '../widgets/drawer.dart';
 import '../widgets/group_tile.dart';
-import 'auth/login_page.dart';
-import 'profile_page.dart';
 import 'search_page.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class MyGroups extends StatefulWidget {
+  const MyGroups({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<MyGroups> createState() => _MyGroupsState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _MyGroupsState extends State<MyGroups> {
   String userName = '';
   String userEmail = '';
-  AuthService authService = AuthService();
+
   Stream? groups;
   bool _isLoading = false;
   String groupName = '';
@@ -43,13 +41,13 @@ class _HomePageState extends State<HomePage> {
   }
 
   userDataGetter() async {
-    await HelperFunctions.getUserNameFromSF().then((value) {
+    await SharedPref.getUserNameFromSF().then((value) {
       setState(() {
         userName = value!;
       });
     });
 
-    await HelperFunctions.getUserEmailFromSF().then((value) {
+    await SharedPref.getUserEmailFromSF().then((value) {
       setState(() {
         userEmail = value!;
       });
@@ -69,7 +67,7 @@ class _HomePageState extends State<HomePage> {
         elevation: 0,
         centerTitle: true,
         title: const Text(
-          'Groups',
+          'My Groups',
           style: txt.appBar,
         ),
         actions: [
@@ -79,90 +77,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: const EdgeInsets.symmetric(vertical: layout.pageMarginVertical),
-          children: [
-            const Center(
-              child: CircleAvatar(
-                radius: 75,
-                backgroundImage: AssetImage('assets/images/user.png'),
-              ),
-            ),
-            const SizedBox(height: layout.spacing),
-            Text(
-              userName,
-              textAlign: TextAlign.center,
-              style: txt.medium,
-            ),
-            const SizedBox(height: layout.spacing),
-            const Divider(height: 2),
-            ListTile(
-              onTap: () {},
-              selectedColor: clr.primary,
-              selected: true,
-              contentPadding: const EdgeInsets.symmetric(horizontal: layout.padding),
-              leading: const Icon(Icons.group),
-              title: const Text('Groups', style: txt.normal),
-            ),
-            ListTile(
-              onTap: () => nextPageReplace(context, ProfilePage(userName: userName, userEmail: userEmail)),
-              selectedColor: clr.primary,
-              contentPadding: const EdgeInsets.symmetric(horizontal: layout.padding),
-              leading: const Icon(Icons.person),
-              title: const Text('Profile', style: txt.normal),
-            ),
-            ListTile(
-              onTap: () async {
-                showDialog(
-                  barrierDismissible: false,
-                  context: context,
-                  builder: ((context) {
-                    return AlertDialog(
-                      title: Text(
-                        'Logout',
-                        style: txt.medium,
-                      ),
-                      content: const Text(
-                        'Are you sure you want to logout?',
-                        style: txt.normal,
-                      ),
-                      actions: [
-                        IconButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          icon: Icon(
-                            Icons.cancel,
-                            color: clr.error,
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: () async {
-                            await authService.logout();
-                            Navigator.of(context).pushAndRemoveUntil(
-                              MaterialPageRoute(builder: (context) => const LoginPage()),
-                              (route) => false,
-                            );
-                          },
-                          icon: Icon(
-                            Icons.exit_to_app,
-                            color: clr.confirm,
-                          ),
-                        ),
-                      ],
-                    );
-                  }),
-                );
-              },
-              selectedColor: clr.primary,
-              contentPadding: const EdgeInsets.symmetric(horizontal: layout.padding),
-              leading: const Icon(Icons.exit_to_app),
-              title: const Text('Logout', style: txt.normal),
-            ),
-          ],
-        ),
-      ),
+      drawer: appDrawer(context, 'MyGroups', userName),
       body: groupList(),
       floatingActionButton: FloatingActionButton(
         onPressed: () => addGroupDialog(context),

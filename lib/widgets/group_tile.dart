@@ -30,7 +30,7 @@ class _GroupTileState extends State<GroupTile> {
         nextPage(
           context,
           ChatPage(
-            currentUserName: widget.userName,
+            userName: widget.userName,
             groupID: widget.groupID,
             groupName: widget.groupName,
           ),

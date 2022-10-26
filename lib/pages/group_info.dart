@@ -1,4 +1,6 @@
+import 'package:chat_app/pages/my_groups.dart';
 import 'package:chat_app/services/database_service.dart';
+import 'package:chat_app/widgets/widgets.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -39,8 +41,8 @@ class _GroupInfoState extends State<GroupInfo> {
     });
   }
 
-  getGroupID(String ID) {
-    return ID.substring(0, ID.indexOf('_'));
+  getGroupID(String id) {
+    return id.substring(0, id.indexOf('_'));
   }
 
   getName(String name) {
@@ -59,7 +61,51 @@ class _GroupInfoState extends State<GroupInfo> {
         ),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () async {
+              showDialog(
+                  barrierDismissible: false,
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: Text(
+                        'Leave Group',
+                        style: txt.medium,
+                      ),
+                      content: const Text(
+                        'Are you sure you want to leave group?',
+                        style: txt.normal,
+                      ),
+                      actions: [
+                        IconButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          icon: Icon(
+                            Icons.cancel,
+                            color: clr.error,
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () async {
+                            DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
+                                .toggleGroupJoin(
+                              widget.groupID,
+                              getName(widget.groupAdmin),
+                              widget.groupName,
+                            )
+                                .whenComplete(() {
+                              nextPageReplace(context, const MyGroups());
+                            });
+                          },
+                          icon: Icon(
+                            Icons.exit_to_app,
+                            color: clr.confirm,
+                          ),
+                        ),
+                      ],
+                    );
+                  });
+            },
             icon: const Icon(Icons.exit_to_app),
           ),
         ],
@@ -126,13 +172,14 @@ class _GroupInfoState extends State<GroupInfo> {
                         backgroundColor: clr.primary,
                         child: Text(
                           //'#',
-													getName(snapshot.data['members'][index]).substring(0, 1).toUpperCase(),
+                          getName(snapshot.data['members'][index]).substring(0, 1).toUpperCase(),
                           textAlign: TextAlign.center,
                           style: txt.medium.copyWith(color: clr.light),
                         ),
                       ),
                       title: Text(getName(snapshot.data['members'][index]), style: txt.normal),
-                      subtitle: Text(getGroupID(snapshot.data['members'][index]), style: txt.small.copyWith(fontSize: txt.textSizeSmall / 1.25)),
+                      subtitle: Text(getGroupID(snapshot.data['members'][index]),
+                          style: txt.small.copyWith(fontSize: txt.textSizeSmall / 1.25)),
                     ),
                   );
                 },

@@ -29,6 +29,10 @@ class DatabaseService {
     return userCollection.doc(uid).snapshots();
   }
 
+  getGroups() async {
+    return groupCollection.snapshots();
+  }
+
   Future createGroup(
     String userName,
     String id,
@@ -75,7 +79,7 @@ class DatabaseService {
     DocumentReference userDocumentReference = userCollection.doc(uid);
     DocumentSnapshot userDocumentSnapshot = await userDocumentReference.get();
     List<dynamic> groups = await userDocumentSnapshot['groups'];
-    if (groups.contains('${groupID}_${groupName}')) {
+    if (groups.contains('${groupID}_$groupName')) {
       return true;
     } else {
       return false;
@@ -89,21 +93,32 @@ class DatabaseService {
     DocumentSnapshot documentSnapshot = await userDocumentReference.get();
     List<dynamic> groups = await documentSnapshot['groups'];
 
-    if (groups.contains('${groupID}_${groupName}')) {
+    if (groups.contains('${groupID}_$groupName')) {
       await userDocumentReference.update({
-        'groups': FieldValue.arrayRemove(['${groupID}_${groupName}'])
+        'groups': FieldValue.arrayRemove(['${groupID}_$groupName'])
       });
       await groupDocumentReference.update({
-        'members': FieldValue.arrayRemove(['${uid}_${userName}'])
+        'members': FieldValue.arrayRemove(['${uid}_$userName'])
       });
-    } else
-		{
-			      await userDocumentReference.update({
-        'groups': FieldValue.arrayUnion(['${groupID}_${groupName}'])
+    } else {
+      await userDocumentReference.update({
+        'groups': FieldValue.arrayUnion(['${groupID}_$groupName'])
       });
       await groupDocumentReference.update({
-        'members': FieldValue.arrayUnion(['${uid}_${userName}'])
+        'members': FieldValue.arrayUnion(['${uid}_$userName'])
       });
-		}
+    }
+  }
+
+  sendMessage(
+    String groupID,
+    Map<String, dynamic> chatMessageData,
+  ) {
+    groupCollection.doc(groupID).collection('messages').add(chatMessageData);
+    groupCollection.doc(groupID).update({
+      'recent_message_sender': chatMessageData['sender'],
+      'recent_message': chatMessageData['message'],
+      'recent_message_time': chatMessageData['time'].toString(),
+    });
   }
 }

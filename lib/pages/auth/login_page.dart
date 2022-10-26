@@ -1,16 +1,16 @@
-import 'package:chat_app/services/database_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
-import '../../helper/helper_functions.dart';
 import '../../services/auth_service.dart';
+import '../../services/database_service.dart';
+import '../../services/shared_pref.dart';
 import '../../shared/clr.dart';
 import '../../shared/layout.dart';
 import '../../shared/txt.dart';
 import '../../widgets/widgets.dart';
-import '../home_page.dart';
+import '../my_groups.dart';
 import 'register_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -56,7 +56,7 @@ class _LoginPageState extends State<LoginPage> {
                       const SizedBox(height: layout.spacing),
                       Text(
                         'Login to see what your friends are talking about!',
-												textAlign: TextAlign.center,
+                        textAlign: TextAlign.center,
                         style: txt.normal.copyWith(
                           color: clr.darken(clr.grey1, 25),
                         ),
@@ -77,7 +77,6 @@ class _LoginPageState extends State<LoginPage> {
                           onChanged: ((value) {
                             setState(() {
                               email = value;
-                              print(email);
                             });
                           }),
                           validator: (value) {
@@ -101,7 +100,6 @@ class _LoginPageState extends State<LoginPage> {
                           onChanged: ((value) {
                             setState(() {
                               password = value;
-                              print(password);
                             });
                           }),
                           validator: (value) {
@@ -164,11 +162,12 @@ class _LoginPageState extends State<LoginPage> {
       });
       await authService.loginUserWithEmailAndPassword(email, password).then((value) async {
         if (value == true) {
-          QuerySnapshot snapshot = await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid).getUserData(email);
-          await HelperFunctions.saveUserLoggedInStatusSF(true);
-          await HelperFunctions.saveUserNameSF(snapshot.docs[0]['user_name']);
-          await HelperFunctions.saveUserEmailSF(snapshot.docs[0]['user_email']);
-          nextPageReplace(context, const HomePage());
+          QuerySnapshot snapshot =
+              await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid).getUserData(email);
+          await SharedPref.saveUserLoggedInStatusSF(true);
+          await SharedPref.saveUserNameSF(snapshot.docs[0]['user_name']);
+          await SharedPref.saveUserEmailSF(snapshot.docs[0]['user_email']);
+          nextPageReplace(context, const MyGroups());
         } else {
           showSnackBar(
             context,

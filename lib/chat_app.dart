@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../shared/clr.dart';
-import 'helper/helper_functions.dart';
 import 'pages/auth/login_page.dart';
-import 'pages/home_page.dart';
+import 'pages/my_groups.dart';
+import 'services/shared_pref.dart';
 
 class ChatApp extends StatefulWidget {
   const ChatApp({super.key});
@@ -22,7 +22,7 @@ class _ChatAppState extends State<ChatApp> {
   }
 
   getUserLoggedInStatus() async {
-    await HelperFunctions.getUserLoggedInStatusFromSF().then((value) {
+    await SharedPref.getUserLoggedInStatusFromSF().then((value) {
       if (value != null) {
         setState(() {
           _isLoggedIn = value;
@@ -38,7 +38,7 @@ class _ChatAppState extends State<ChatApp> {
       theme: ThemeData(
         primaryColor: clr.primary,
       ),
-      home: _isLoggedIn ? const HomePage() : const LoginPage(),
+      home: _isLoggedIn ? const MyGroups() : const LoginPage(),
     );
   }
 }

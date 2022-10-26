@@ -9,8 +9,7 @@ import 'package:flutter/material.dart';
 import '../../shared/clr.dart';
 import '../../shared/layout.dart';
 import '../../shared/txt.dart';
-import '../../services/database_service.dart';
-import '../helper/helper_functions.dart';
+import '../services/shared_pref.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -35,7 +34,7 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   getCurrentUserIDandName() async {
-    await HelperFunctions.getUserNameFromSF().then((value) {
+    await SharedPref.getUserNameFromSF().then((value) {
       setState(() {
         userName = value!;
       });
@@ -43,8 +42,8 @@ class _SearchPageState extends State<SearchPage> {
     user = FirebaseAuth.instance.currentUser;
   }
 
-  getGroupID(String ID) {
-    return ID.substring(0, ID.indexOf('_'));
+  getGroupID(String id) {
+    return id.substring(0, id.indexOf('_'));
   }
 
   getName(String name) {
@@ -137,7 +136,7 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   searchGroupTile(String userName, String groupID, String groupName, String admin) {
-    isInGroup(userName, groupID, groupName, admin);
+    isInGroup(userName, groupID, groupName);
     return ListTile(
       contentPadding: const EdgeInsets.all(layout.padding),
       leading: CircleAvatar(
@@ -156,7 +155,7 @@ class _SearchPageState extends State<SearchPage> {
             });
             showSnackBar(context, 'Successfully joined group', clr.confirm);
             Future.delayed(const Duration(seconds: 2), () {
-              nextPage(context, ChatPage(currentUserName: userName, groupID: groupID, groupName: groupName));
+              nextPage(context, ChatPage(userName: userName, groupID: groupID, groupName: groupName));
             });
           } else {
             setState(() {
@@ -185,7 +184,7 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 
-  isInGroup(String userName, String groupID, String groupName, String admin) {
+  isInGroup(String userName, String groupID, String groupName) {
     DatabaseService(uid: user!.uid).isUserInGroup(groupID, groupName, userName).then((value) {
       setState(() {
         hasJoinedGroup = value;

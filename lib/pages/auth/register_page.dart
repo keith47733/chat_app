@@ -1,14 +1,14 @@
-import 'package:chat_app/services/auth_service.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
+import '../../services/auth_service.dart';
+import '../../services/shared_pref.dart';
 import '../../shared/clr.dart';
 import '../../shared/layout.dart';
 import '../../shared/txt.dart';
 import '../../widgets/widgets.dart';
-import '../home_page.dart';
+import '../my_groups.dart';
 import 'login_page.dart';
-import '../../helper/helper_functions.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -77,7 +77,6 @@ class _RegisterPageState extends State<RegisterPage> {
                           onChanged: ((value) {
                             setState(() {
                               name = value;
-                              print(name);
                             });
                           }),
                           validator: (value) {
@@ -102,7 +101,6 @@ class _RegisterPageState extends State<RegisterPage> {
                           onChanged: ((value) {
                             setState(() {
                               email = value;
-                              print(email);
                             });
                           }),
                           validator: (value) {
@@ -127,7 +125,6 @@ class _RegisterPageState extends State<RegisterPage> {
                           onChanged: ((value) {
                             setState(() {
                               password = value;
-                              print(password);
                             });
                           }),
                           validator: (value) {
@@ -196,10 +193,10 @@ class _RegisterPageState extends State<RegisterPage> {
       )
           .then((value) async {
         if (value == true) {
-          await HelperFunctions.saveUserLoggedInStatusSF(true);
-          await HelperFunctions.saveUserNameSF(name);
-          await HelperFunctions.saveUserEmailSF(email);
-          nextPageReplace(context, const HomePage());
+          await SharedPref.saveUserLoggedInStatusSF(true);
+          await SharedPref.saveUserNameSF(name);
+          await SharedPref.saveUserEmailSF(email);
+          nextPageReplace(context, const MyGroups());
         } else {
           showSnackBar(
             context,
